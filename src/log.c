@@ -196,5 +196,5 @@ void _log_error_impl(const char* file, int line, const char* msg) {
 }
 
 void _log_fatal_impl(const char* file, int line, const char* msg) {
-    log_log(LOG_ERROR, file, line, msg);
+    log_log(LOG_FATAL, file, line, msg);
 }
