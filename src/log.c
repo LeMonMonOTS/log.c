@@ -36,7 +36,7 @@ static struct
     void*      udata;
     log_LockFn lock;
     int        level;
-    bool       quiet;
+    int        quiet;
     Callback   callbacks[MAX_CALLBACKS];
 } L;
 
@@ -82,14 +82,14 @@ static void file_callback(log_Event* ev) {
 
 static void lock(void) {
     if (L.lock) {
-        L.lock(true, L.udata);
+        L.lock(1, L.udata);
     }
 }
 
 
 static void unlock(void) {
     if (L.lock) {
-        L.lock(false, L.udata);
+        L.lock(0, L.udata);
     }
 }
 
@@ -110,7 +110,7 @@ void log_set_level(int level) {
 }
 
 
-void log_set_quiet(bool enable) {
+void log_set_quiet(int enable) {
     L.quiet = enable;
 }
 
@@ -147,6 +147,7 @@ void log_log(int level, const char* file, int line, const char* fmt, ...) {
     int       i;
     log_Event ev;
 
+    memset(&ev, 0, sizeof(ev));
     ev.fmt   = fmt;
     ev.file  = file;
     ev.line  = line;

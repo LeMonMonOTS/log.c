@@ -9,8 +9,8 @@
 #define LOG_H
 
 #include <stdarg.h>
-#include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 
 #define LOG_VERSION "0.1.0"
@@ -28,7 +28,7 @@ typedef struct
 } log_Event;
 
 typedef void (*log_LogFn)(log_Event* ev);
-typedef void (*log_LockFn)(bool lock, void* udata);
+typedef void (*log_LockFn)(int lock, void* udata);
 
 #define log_trace(MSG) _log_trace_impl(__FILE__, __LINE__, (MSG))
 #define log_debug(MSG) _log_debug_impl(__FILE__, __LINE__, (MSG))
@@ -40,7 +40,7 @@ typedef void (*log_LockFn)(bool lock, void* udata);
 const char* log_level_string(int level);
 void        log_set_lock(log_LockFn fn, void* udata);
 void        log_set_level(int level);
-void        log_set_quiet(bool enable);
+void        log_set_quiet(int enable);
 int         log_add_callback(log_LogFn fn, void* udata, int level);
 int         log_add_fp(FILE* fp, int level);
 
