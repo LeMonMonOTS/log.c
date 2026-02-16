@@ -42,6 +42,7 @@ static struct
 
 
 static const char* level_strings[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
+enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 
 #ifdef LOG_USE_COLOR
 static const char* level_colors[] =
@@ -115,9 +116,12 @@ void log_set_quiet(bool enable) {
 
 
 int log_add_callback(log_LogFn fn, void* udata, int level) {
-    for (int i = 0; i < MAX_CALLBACKS; i++) {
+    int i;
+    for (i = 0; i < MAX_CALLBACKS; i++) {
         if (!L.callbacks[i].fn) {
-            L.callbacks[i] = (Callback){fn, udata, level};
+            L.callbacks[i].fn    = fn;
+            L.callbacks[i].udata = udata;
+            L.callbacks[i].level = level;
             return 0;
         }
     }
@@ -140,12 +144,13 @@ static void init_event(log_Event* ev, void* udata) {
 
 
 void log_log(int level, const char* file, int line, const char* fmt, ...) {
-    log_Event ev = {
-        .fmt   = fmt,
-        .file  = file,
-        .line  = line,
-        .level = level,
-    };
+    int       i;
+    log_Event ev;
+
+    ev.fmt   = fmt;
+    ev.file  = file;
+    ev.line  = line;
+    ev.level = level;
 
     lock();
 
@@ -156,7 +161,7 @@ void log_log(int level, const char* file, int line, const char* fmt, ...) {
         va_end(ev.ap);
     }
 
-    for (int i = 0; i < MAX_CALLBACKS && L.callbacks[i].fn; i++) {
+    for (i = 0; i < MAX_CALLBACKS && L.callbacks[i].fn; i++) {
         Callback* cb = &L.callbacks[i];
         if (level >= cb->level) {
             init_event(&ev, cb->udata);
@@ -167,4 +172,29 @@ void log_log(int level, const char* file, int line, const char* fmt, ...) {
     }
 
     unlock();
+}
+
+/* 最小改动原则，这里只是用到原来可变参数功能的特例 */
+void _log_trace_impl(const char* file, int line, const char* msg) {
+    log_log(LOG_TRACE, file, line, msg);
+}
+
+void _log_debug_impl(const char* file, int line, const char* msg) {
+    log_log(LOG_DEBUG, file, line, msg);
+}
+
+void _log_info_impl(const char* file, int line, const char* msg) {
+    log_log(LOG_INFO, file, line, msg);
+}
+
+void _log_warn_impl(const char* file, int line, const char* msg) {
+    log_log(LOG_WARN, file, line, msg);
+}
+
+void _log_error_impl(const char* file, int line, const char* msg) {
+    log_log(LOG_ERROR, file, line, msg);
+}
+
+void _log_fatal_impl(const char* file, int line, const char* msg) {
+    log_log(LOG_ERROR, file, line, msg);
 }

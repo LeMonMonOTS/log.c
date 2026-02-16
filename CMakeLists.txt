@@ -4,7 +4,7 @@ add_library(log SHARED
     src/log.c
 )
 
-target_compile_features(log PRIVATE c_std_90)
+set_target_properties(log PROPERTIES C_STANDARD 90 C_STANDARD_REQUIRED ON)
 
 target_include_directories(log
     PUBLIC
