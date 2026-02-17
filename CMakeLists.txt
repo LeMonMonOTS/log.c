@@ -6,6 +6,9 @@ add_library(log SHARED
 
 set_target_properties(log PROPERTIES C_STANDARD 90 C_STANDARD_REQUIRED ON)
 
+# To enable log color
+set(LOG_USE_COLOR true)
+
 target_include_directories(log
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>

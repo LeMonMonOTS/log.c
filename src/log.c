@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 rxi
+ * Copyright (c) 2020 rxi; 2026 LeMonMonOTS
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -23,6 +23,7 @@
 #include "log.h"
 
 #define MAX_CALLBACKS 32
+#define LOG_MASSAGE_BUFFER_LEN 1024
 
 typedef struct
 {
@@ -40,9 +41,9 @@ static struct
     Callback   callbacks[MAX_CALLBACKS];
 } L;
 
+static char LOG_MASSAGE_BUFFER[LOG_MASSAGE_BUFFER_LEN];
 
 static const char* level_strings[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
-enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 
 #ifdef LOG_USE_COLOR
 static const char* level_colors[] =
@@ -94,7 +95,7 @@ static void unlock(void) {
 }
 
 
-const char* log_level_string(int level) {
+const char* log_level_string(log_Level level) {
     return level_strings[level];
 }
 
@@ -105,7 +106,7 @@ void log_set_lock(log_LockFn fn, void* udata) {
 }
 
 
-void log_set_level(int level) {
+void log_set_level(log_Level level) {
     L.level = level;
 }
 
@@ -115,7 +116,7 @@ void log_set_quiet(int enable) {
 }
 
 
-int log_add_callback(log_LogFn fn, void* udata, int level) {
+int log_add_callback(log_LogFn fn, void* udata, log_Level level) {
     int i;
     for (i = 0; i < MAX_CALLBACKS; i++) {
         if (!L.callbacks[i].fn) {
@@ -129,7 +130,7 @@ int log_add_callback(log_LogFn fn, void* udata, int level) {
 }
 
 
-int log_add_fp(FILE* fp, int level) {
+int log_add_fp(FILE* fp, log_Level level) {
     return log_add_callback(file_callback, fp, level);
 }
 
@@ -175,7 +176,6 @@ void log_log(int level, const char* file, int line, const char* fmt, ...) {
     unlock();
 }
 
-/* 最小改动原则，这里只是用到原来可变参数功能的特例 */
 void _log_trace_impl(const char* file, int line, const char* msg) {
     log_log(LOG_TRACE, file, line, msg);
 }
@@ -198,4 +198,20 @@ void _log_error_impl(const char* file, int line, const char* msg) {
 
 void _log_fatal_impl(const char* file, int line, const char* msg) {
     log_log(LOG_FATAL, file, line, msg);
+}
+
+const char* log_format(const char* fmt, ...) {
+    va_list args;
+
+    if (fmt == NULL) {
+        return NULL;
+    }
+
+    LOG_MASSAGE_BUFFER[0] = '\0';
+
+    va_start(args, fmt);
+    vsprintf(LOG_MASSAGE_BUFFER, fmt, args);
+    va_end(args);
+
+    return (const char*)LOG_MASSAGE_BUFFER;
 }
