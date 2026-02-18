@@ -38,20 +38,20 @@ typedef enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL } 
 #define log_error(MSG) _log_error_impl(__FILE__, __LINE__, (MSG))
 #define log_fatal(MSG) _log_fatal_impl(__FILE__, __LINE__, (MSG))
 
-const char* log_level_string(log_Level level);
-void        log_set_lock(log_LockFn fn, void* udata);
-void        log_set_level(log_Level level);
-void        log_set_quiet(int enable);
-int         log_add_callback(log_LogFn fn, void* udata, log_Level level);
-int         log_add_fp(FILE* fp, log_Level level);
+const char* log_level_string(const log_Level level);
+void        log_set_lock(const log_LockFn fn, void* udata);
+void        log_set_level(const log_Level level);
+void        log_set_quiet(const int enable);
+int         log_add_callback(const log_LogFn fn, void* udata, const log_Level level);
+int         log_add_fp(FILE* fp, const log_Level level);
 
 /* 为适配 C89/C90 标准，将可变参数宏改为字符串输入msg */
-void _log_trace_impl(const char* file, int line, const char* msg);
-void _log_debug_impl(const char* file, int line, const char* msg);
-void _log_info_impl(const char* file, int line, const char* msg);
-void _log_warn_impl(const char* file, int line, const char* msg);
-void _log_error_impl(const char* file, int line, const char* msg);
-void _log_fatal_impl(const char* file, int line, const char* msg);
+void _log_trace_impl(const char* file, const int line, const char* msg);
+void _log_debug_impl(const char* file, const int line, const char* msg);
+void _log_info_impl(const char* file, const int line, const char* msg);
+void _log_warn_impl(const char* file, const int line, const char* msg);
+void _log_error_impl(const char* file, const int line, const char* msg);
+void _log_fatal_impl(const char* file, const int line, const char* msg);
 
 /* 作为补偿，可以直接用一个静态缓存区来格式化字符串 */
 const char* log_format(const char* fmt, ...);

@@ -95,28 +95,28 @@ static void unlock(void) {
 }
 
 
-const char* log_level_string(log_Level level) {
+const char* log_level_string(const log_Level level) {
     return level_strings[level];
 }
 
 
-void log_set_lock(log_LockFn fn, void* udata) {
+void log_set_lock(const log_LockFn fn, void* udata) {
     L.lock  = fn;
     L.udata = udata;
 }
 
 
-void log_set_level(log_Level level) {
+void log_set_level(const log_Level level) {
     L.level = level;
 }
 
 
-void log_set_quiet(int enable) {
+void log_set_quiet(const int enable) {
     L.quiet = enable;
 }
 
 
-int log_add_callback(log_LogFn fn, void* udata, log_Level level) {
+int log_add_callback(const log_LogFn fn, void* udata, const log_Level level) {
     int i;
     for (i = 0; i < MAX_CALLBACKS; i++) {
         if (!L.callbacks[i].fn) {
@@ -130,7 +130,7 @@ int log_add_callback(log_LogFn fn, void* udata, log_Level level) {
 }
 
 
-int log_add_fp(FILE* fp, log_Level level) {
+int log_add_fp(FILE* fp, const log_Level level) {
     return log_add_callback(file_callback, fp, level);
 }
 
@@ -176,27 +176,27 @@ void log_log(int level, const char* file, int line, const char* fmt, ...) {
     unlock();
 }
 
-void _log_trace_impl(const char* file, int line, const char* msg) {
+void _log_trace_impl(const char* file, const int line, const char* msg) {
     log_log(LOG_TRACE, file, line, msg);
 }
 
-void _log_debug_impl(const char* file, int line, const char* msg) {
+void _log_debug_impl(const char* file, const int line, const char* msg) {
     log_log(LOG_DEBUG, file, line, msg);
 }
 
-void _log_info_impl(const char* file, int line, const char* msg) {
+void _log_info_impl(const char* file, const int line, const char* msg) {
     log_log(LOG_INFO, file, line, msg);
 }
 
-void _log_warn_impl(const char* file, int line, const char* msg) {
+void _log_warn_impl(const char* file, const int line, const char* msg) {
     log_log(LOG_WARN, file, line, msg);
 }
 
-void _log_error_impl(const char* file, int line, const char* msg) {
+void _log_error_impl(const char* file, const int line, const char* msg) {
     log_log(LOG_ERROR, file, line, msg);
 }
 
-void _log_fatal_impl(const char* file, int line, const char* msg) {
+void _log_fatal_impl(const char* file, const int line, const char* msg) {
     log_log(LOG_FATAL, file, line, msg);
 }
 

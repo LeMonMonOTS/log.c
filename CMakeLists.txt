@@ -7,7 +7,7 @@ add_library(log SHARED
 set_target_properties(log PROPERTIES C_STANDARD 90 C_STANDARD_REQUIRED ON)
 
 # To enable log color
-set(LOG_USE_COLOR true)
+target_compile_definitions(log PUBLIC LOG_USE_COLOR)
 
 target_include_directories(log
     PUBLIC
