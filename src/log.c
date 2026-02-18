@@ -23,7 +23,6 @@
 #include "log.h"
 
 #define MAX_CALLBACKS 32
-#define LOG_MASSAGE_BUFFER_LEN 1024
 
 typedef struct
 {
@@ -40,8 +39,6 @@ static struct
     int        quiet;
     Callback   callbacks[MAX_CALLBACKS];
 } L;
-
-static char LOG_MASSAGE_BUFFER[LOG_MASSAGE_BUFFER_LEN];
 
 static const char* level_strings[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
 
@@ -176,42 +173,49 @@ void log_log(int level, const char* file, int line, const char* fmt, ...) {
     unlock();
 }
 
+
 void _log_trace_impl(const char* file, const int line, const char* msg) {
     log_log(LOG_TRACE, file, line, msg);
 }
+
 
 void _log_debug_impl(const char* file, const int line, const char* msg) {
     log_log(LOG_DEBUG, file, line, msg);
 }
 
+
 void _log_info_impl(const char* file, const int line, const char* msg) {
     log_log(LOG_INFO, file, line, msg);
 }
+
 
 void _log_warn_impl(const char* file, const int line, const char* msg) {
     log_log(LOG_WARN, file, line, msg);
 }
 
+
 void _log_error_impl(const char* file, const int line, const char* msg) {
     log_log(LOG_ERROR, file, line, msg);
 }
+
 
 void _log_fatal_impl(const char* file, const int line, const char* msg) {
     log_log(LOG_FATAL, file, line, msg);
 }
 
-const char* log_format(const char* fmt, ...) {
+
+int log_format(char massage_buffer[], const char* fmt, ...) {
     va_list args;
 
     if (fmt == NULL) {
-        return NULL;
+        return 0;
     }
 
-    LOG_MASSAGE_BUFFER[0] = '\0';
+    massage_buffer[0] = '\0';
 
     va_start(args, fmt);
-    vsprintf(LOG_MASSAGE_BUFFER, fmt, args);
+    vsprintf(massage_buffer, fmt, args);
     va_end(args);
 
-    return (const char*)LOG_MASSAGE_BUFFER;
+    return 1;
 }

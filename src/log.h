@@ -15,6 +15,9 @@
 
 #define LOG_VERSION "0.1.1"
 
+#define LOG_MASSAGE_BUFFER_LEN 1024
+
+
 typedef struct
 {
     va_list     ap;
@@ -53,8 +56,8 @@ void _log_warn_impl(const char* file, const int line, const char* msg);
 void _log_error_impl(const char* file, const int line, const char* msg);
 void _log_fatal_impl(const char* file, const int line, const char* msg);
 
-/* 作为补偿，可以直接用一个静态缓存区来格式化字符串 */
-const char* log_format(const char* fmt, ...);
+/* 传入一个缓存区来格式化 */
+int log_format(char massage_buffer[], const char* fmt, ...);
 
 
 #endif
